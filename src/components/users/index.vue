@@ -8,7 +8,7 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <span style="float: right;">Today is Saturday, 21 November 2020</span>
-          <span>Hi Jane Done!</span>
+          <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
           <h2>Manage User</h2>
           <el-table
@@ -18,12 +18,7 @@
             :default-sort = "{prop: 'id', order: 'ascending'}"
             style="width: 100%">
             <el-table-column
-              prop="id"
-              sortable
-              label="ID">
-            </el-table-column>
-            <el-table-column
-              prop="fullName"
+              prop="name"
               sortable
               label="Name">
             </el-table-column>
@@ -116,104 +111,31 @@ export default {
         index: null,
         item: {},
       },
-      tableData: [{
-        id: '1',
-        fullName: 'John Smith',
-        title: 'Supervisor',
-        email: 'jhon.smith@example.com',
-        phone: '08123456789',
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
-      }, {
-        id: '2',
-        fullName: 'Jane Doe',
-        title: 'Manager',
-        email: 'jane.doe@example.com',
-        phone: '08123456789',
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
-      }, {
-        id: '3',
-        fullName: 'Chris Evan',
-        title: 'Captain America',
-        email: 'chris.evan@example.com',
-        phone: '08123456789',
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
-      }, {
-        id: '4',
-        fullName: 'Scarlett Johansson',
-        title: 'Black Widow',
-        email: 'scarlett.johansson@example.com',
-        phone: '08123456789',
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
-      }, {
-        id: '5',
-        fullName: 'Tom Hardy',
-        title: 'Good Guy',
-        email: 'tom.hardy@example.com',
-        phone: '08123456789',
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
-      }, {
-        id: '6',
-        fullName: 'Keanu Reeves',
-        title: 'Samurai',
-        email: 'keanu.reeves@example.com',
-        phone: '08123456789',
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
-      }, {
-        id: '7',
-        fullName: 'Will Smith',
-        title: 'Prince',
-        email: 'will.smith@example.com',
-        phone: '08123456789',
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
-      }, {
-        id: '8',
-        fullName: 'Jhonny Depp',
-        title: 'Captain',
-        email: 'jhonny.depp@example.com',
-        phone: '08123456789',
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
-      }, {
-        id: '9',
-        fullName: 'Ryan Reynolds',
-        title: 'Supervisor',
-        email: 'ryan.reynolds@example.com',
-        phone: '08123456789',
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
-      }, {
-        id: '10',
-        fullName: 'Peter Parker',
-        title: 'Staff',
-        email: 'peter.parker@example.com',
-        phone: '08123456789',
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
-      }],
-      loading: false
+      tableData: [],
+      loading: true
     };
   },
   name: 'home',
   components: {
     LayoutMain,
   },
-  created() {
+  mounted() {
+    this.getUserList();
   },
   methods: {
+    getUserList() {
+      this.$store.dispatch('user/list').then((list) => {
+        this.tableData = list;
+        this.loading = false;
+      });
+    },
     handleShow(index, row) {
       console.log(index, row);
-      this.$router.push(`/user/${row.id}`);
+      this.$router.push(`/user/${row._id}`);
     },
     handleEdit(index, row) {
       console.log(index, row);
-      this.$router.push(`/user/${row.id}/edit`);
+      this.$router.push(`/user/${row._id}/edit`);
     },
     confirmDelete(index, row) {
       console.log(index, row);
@@ -223,15 +145,22 @@ export default {
     },
     handleDelete(index, row) {
       console.log(index, row);
-      let idx = this.tableData.indexOf(row);
-      if (idx > -1) {
-          this.tableData.splice(idx, 1);
-      }
-      this.deleteUser.dialogVisible = false;
-      this.$message({
-          message: `Congrats, user ${row.fullName} deleted successfully.`,
-          type: 'success'
+      this.$store.dispatch('user/delete', { id: row._id}).then(() => {
+        let idx = this.tableData.indexOf(row);
+        if (idx > -1) {
+            this.tableData.splice(idx, 1);
+        }
+        this.deleteUser.dialogVisible = false;
+        this.$message({
+            message: `Congrats, user ${row.name} deleted successfully.`,
+            type: 'success'
+          });
+      }).catch(() => {
+        this.$message({
+          message: 'user deletion failed.',
+          type: 'error',
         });
+      });
     },
     handleSearch(scope) {
       console.log(scope);

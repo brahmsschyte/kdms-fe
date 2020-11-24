@@ -3,18 +3,18 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/' }">Home</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/user' }">User</el-breadcrumb-item>
-      <el-breadcrumb-item>{{ $route.params.id }}</el-breadcrumb-item>
+      <el-breadcrumb-item>{{ form.name }}</el-breadcrumb-item>
     </el-breadcrumb>
     <el-container>
       <el-row :gutter="20">
         <el-col :span="24">
           <span style="float: right;">Today is Saturday, 21 November 2020</span>
-          <span>Hi Jane Done!</span>
+          <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
-          <h2>Display User {{ $route.params.id }}</h2>
+          <h2>Display User</h2>
           <el-row :gutter="20">
-            <el-col :span="6"><div class="grid-content bg-purple">Full name</div></el-col>
-            <el-col :span="18"><div class="grid-content bg-purple">{{ form.fullName }}</div></el-col>
+            <el-col :span="6"><div class="grid-content bg-purple">Name</div></el-col>
+            <el-col :span="18"><div class="grid-content bg-purple">{{ form.name }}</div></el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="6"><div class="grid-content bg-purple">Title</div></el-col>
@@ -32,10 +32,6 @@
             <el-col :span="6"><div class="grid-content bg-purple">Role</div></el-col>
             <el-col :span="18"><div class="grid-content bg-purple">{{ form.role }}</div></el-col>
           </el-row>
-          <el-row :gutter="20">
-            <el-col :span="6"><div class="grid-content bg-purple">Active</div></el-col>
-            <el-col :span="18"><div class="grid-content bg-purple">{{ form.active }}</div></el-col>
-          </el-row>
         </el-col>
       </el-row>
     </el-container>
@@ -50,17 +46,7 @@ export default {
   data() {
     return {
       userSearch: '',
-      form: {
-        id: '1',
-        fullName: 'John Smith',
-        title: 'Supervisor',
-        email: 'jhon.smith@example.com',
-        phone: '08123456789',
-        role: '',
-        active: false,
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
-      },
+      form: {},
       loading: false
     };
   },
@@ -68,9 +54,15 @@ export default {
   components: {
     LayoutMain,
   },
-  created() {
+  mounted() {
+    this.getUser();
   },
   methods: {
+    getUser() {
+      this.$store.dispatch('user/view', { id: this.$route.params.id }).then((user) => {
+        this.form = user;
+      });
+    },
     onSubmit() {
       this.$message({
           message: 'Congrats, user created successfully.',

@@ -10,7 +10,7 @@
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b">
-          <el-menu-item index="/"><h1 style="margin: 0;">ProtoKDMS</h1></el-menu-item>
+          <el-menu-item index="/"><h1 style="margin: 0;">Delapan</h1></el-menu-item>
           <el-menu-item>
             <el-input
               placeholder="Search document..."
@@ -21,7 +21,7 @@
           <el-submenu index="#" style="float: right;">
             <template slot="title"><el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar></template>
             <el-menu-item index="/option">Settings</el-menu-item>
-            <el-menu-item index="/login">Sign out</el-menu-item>
+            <el-menu-item index="/logout">Sign out</el-menu-item>
           </el-submenu>
           <el-menu-item index="#" style="float: right;">
             <i class="el-icon-message-solid" style="color: #FFF"></i>
@@ -134,14 +134,13 @@ export default {
   mounted() {
   },
   methods: {
-    handleSelect(key, keyPath) {
-      // if (key === '/logout') {
-      //   this.$store.dispatch('user/logout');
-      //   this.$router.push('/login');
-      // } else {
+    handleSelect(key) {
+      if (key === '/logout') {
+        this.$store.dispatch('user/logout');
+        this.$router.push('/login');
+      } else {
         this.$router.push(key);
-      // }
-      console.log(key, keyPath);
+      }
     },
     toggleSidebar() {
       this.isCollapse = !this.isCollapse;

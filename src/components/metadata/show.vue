@@ -9,7 +9,7 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <span style="float: right;">Today is Saturday, 21 November 2020</span>
-          <span>Hi Jane Done!</span>
+          <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
           <h2>Display Metadata {{ $route.params.id }}</h2>
           <el-row :gutter="20">

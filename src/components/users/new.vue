@@ -9,12 +9,12 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <span style="float: right;">Today is Saturday, 21 November 2020</span>
-          <span>Hi Jane Done!</span>
+          <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
           <h2>New User</h2>
-          <el-form ref="form" :model="form" label-width="120px">
+          <el-form ref="form" :model="form" :rules="rules" label-width="120px">
             <el-form-item label="Full name">
-              <el-input v-model="form.fullName"></el-input>
+              <el-input v-model="form.name"></el-input>
             </el-form-item>
             <el-form-item label="Title">
               <el-input v-model="form.title"></el-input>
@@ -32,11 +32,14 @@
                 <el-option label="Staff" value="Staff"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="Activate account">
-              <el-switch v-model="form.active"></el-switch>
+            <el-form-item label="Password" prop="password">
+              <el-input placeholder="Please input password" v-model="form.password" show-password></el-input>
+            </el-form-item>
+            <el-form-item label="Confirm Pass" prop="checkPass">
+              <el-input placeholder="Please input password" v-model="form.checkPass" show-password></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSubmit">Create</el-button>
+              <el-button type="primary" @click="onSubmit()">Create</el-button>
             </el-form-item>
           </el-form>
         </el-col>
@@ -51,20 +54,35 @@ import LayoutMain from '@/components/layouts/Main.vue';
 
 export default {
   data() {
+    var validatePass2 = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('Please input the password again'));
+      } else if (value !== this.form.password) {
+        callback(new Error('Two inputs don\'t match!'));
+      } else {
+        callback();
+      }
+    };
     return {
       userSearch: '',
       form: {
-        id: '1',
-        fullName: '',
+        name: '',
         title: '',
         email: '',
         phone: '',
-        role: '',
-        active: false,
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
+        password: '',
+        checkPass: ''
       },
-      loading: false
+      loading: false,
+      rules: {
+        password: [
+          { required: true, message: 'Please input your password!', trigger: 'blur' },
+          { min: 6, message: 'Length should be more than 6 character', trigger: 'blur' }
+        ],
+        checkPass: [
+          { validator: validatePass2, trigger: 'blur' }
+        ]
+      }
     };
   },
   name: 'home',
@@ -75,10 +93,25 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.$message({
-          message: 'Congrats, user created successfully.',
-          type: 'success'
-        });
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          this.$store.dispatch('user/create', this.form).then((user) => {
+            this.$message({
+              message: 'Congrats, user created successfully.',
+              type: 'success',
+            });
+
+            this.$router.push({ name: 'show_user', params: { id: user._id } });
+          }).catch(() => {
+            this.$message({
+              message: 'user creation failed.',
+              type: 'error',
+            });
+          });
+        } else {
+          return false;
+        }
+      });
     }
   }
 };

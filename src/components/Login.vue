@@ -3,10 +3,10 @@
     <div id="login-container">
 
       <el-form ref="form" :model="form" :rules="formRules" style="max-width: 22em;">
-        <img alt="Cyclops logo" src="../assets/logo.png" style="width: 40%;">
+        <img alt="Delapan logo" src="../assets/delapan.jpeg" style="width: 40%;">
         <p style="font-size: small; margin-top: 0;">Knowledge and Document Management Made Easy.</p>
-        <el-form-item prop="username">
-          <el-input prefix-icon="el-icon-user" placeholder="username" v-model="form.username"></el-input>
+        <el-form-item prop="email">
+          <el-input prefix-icon="el-icon-user" placeholder="email" v-model="form.email"></el-input>
         </el-form-item>
         <el-form-item prop="password">
           <el-input prefix-icon="el-icon-lock" placeholder="password" v-model="form.password" show-password></el-input>
@@ -44,13 +44,13 @@ export default {
       isLoading: true,
       fullPage: true,
       form: {
-        username: '',
+        email: '',
         password: '',
         remember: true,
       },
       formRules: {
-        username: [
-          { required: true, message: 'Please input your username!', trigger: 'blur' },
+        email: [
+          { required: true, message: 'Please input your email!', trigger: 'blur' },
         ],
         password: [
           { required: true, message: 'Please input your password!', trigger: 'blur' },
@@ -79,39 +79,26 @@ export default {
 
   methods: {
     submitForm(formName) {
-      console.log(formName);
-      if (this.form.password != 'password') {
-        this.$message({
-            message: `Failed to login, incorrect username and/or password.`,
-            type: 'error'
-          });
-      } else {
-        this.$message({
-            message: `Successful login, welcome back.`,
-            type: 'success'
-          });
-        this.$router.push(`/`);
-      }
-      // this.$refs[formName].validate((valid) => {
-      //   if (valid) {
-      //     this.$store.dispatch('user/login', this.form).then(() => {
-      //       this.$message({
-      //         message: 'Authentication successful.',
-      //         type: 'success',
-      //       });
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$store.dispatch('user/login', this.form).then(() => {
+            this.$message({
+              message: 'Authentication successful.',
+              type: 'success',
+            });
 
-      //       this.$router.push({ name: 'home' });
-      //     }).catch(() => {
-      //       this.$message({
-      //         message: 'Authentication failed.',
-      //         type: 'error',
-      //       });
-      //     });
-      //   } else {
-      //     // console.log('error submit!!');
-      //     return false;
-      //   }
-      // });
+            this.$router.push({ name: 'home' });
+          }).catch(() => {
+            this.$message({
+              message: 'Authentication failed.',
+              type: 'error',
+            });
+          });
+        } else {
+          // console.log('error submit!!');
+          return false;
+        }
+      });
     },
   },
 };

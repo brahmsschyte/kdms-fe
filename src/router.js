@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-// import store from './store';
+import store from './store';
 import Home from './components/Home.vue';
 import Document from './components/documents/index.vue';
 import DocumentNew from './components/documents/new.vue';
@@ -166,19 +166,19 @@ const router = new VueRouter({
   ],
 });
 
-// router.beforeEach((to, from, next) => {
-//   // console.log('Router Guard Invoked!');
-//   if (to.fullPath === '/login') {
-//     next();
-//   } else if (localStorage.getItem('USER_TOKEN') === null) {
-//     next('/login');
-//   } else {
-//     store.dispatch('user/validate').then(() => {
-//       next();
-//     }).catch(() => {
-//       next('/login');
-//     });
-//   }
-// });
+router.beforeEach((to, from, next) => {
+  // console.log('Router Guard Invoked!');
+  if (to.fullPath === '/login') {
+    next();
+  } else if (localStorage.getItem('USER_TOKEN') === null) {
+    next('/login');
+  } else {
+    store.dispatch('user/validate').then(() => {
+      next();
+    }).catch(() => {
+      next('/login');
+    });
+  }
+});
 
 export default router;
