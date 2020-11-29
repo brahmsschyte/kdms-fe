@@ -11,29 +11,23 @@
           <span style="float: right;">Today is Saturday, 21 November 2020</span>
           <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
-          <h2>Edit Metadata {{ $route.params.id }}</h2>
-          <el-form ref="form" :model="form" label-width="120px">
+          <h2>Edit Metadata</h2>
+          <el-form ref="form" :model="form" :rules="rules" label-width="120px">
             <el-form-item label="Name">
               <el-input v-model="form.name"></el-input>
             </el-form-item>
-            <el-form-item label="Description">
-              <el-input type="textarea" v-model="form.description"></el-input>
+            <el-form-item label="Field Name">
+              <el-input v-model="form.fieldName"></el-input>
             </el-form-item>
-            <el-form-item label="model">
-              <el-input v-model="form.model"></el-input>
-            </el-form-item>
-            <el-form-item label="Label">
-              <el-input v-model="form.label"></el-input>
-            </el-form-item>
-            <el-form-item label="Input Type">
-              <el-select v-model="form.inputType" placeholder="please select input type">
+            <el-form-item label="Field Type">
+              <el-select v-model="form.fieldType" placeholder="please select input type">
                 <el-option label="Text" value="text"></el-option>
                 <el-option label="Text Area" value="textarea"></el-option>
                 <el-option label="Number" value="number"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="Required">
-              <el-switch v-model="form.required"></el-switch>
+              <el-switch v-model="form.isRequired"></el-switch>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="onSubmit">Update</el-button>
@@ -54,32 +48,63 @@ export default {
     return {
       metadataSearch: '',
       form: {
-        id: '1',
-        name: 'Nomor Surat Jalan',
-        description: 'Nomor Surat Jalan',
-        model: 'noSuratJalan',
-        label: 'Nomor Surat Jalan',
-        inputType: 'text',
-        required: true,
-        author: 'Jhon Smith',
-        createdAt: '2020-11-14 00:00:00',
-        updatedAt: '2020-11-14 00:00:00'
+        id: '',
+        name: '',
+        fieldName: '',
+        fieldType: '',
+        isRequired: false,
       },
-      loading: false
+      loading: false,
+      rules: {
+        name: [
+          { required: true, message: 'Please input your name!', trigger: 'blur' }
+        ],
+        fieldName: [
+          { required: true, message: 'Please input your fieldName!', trigger: 'blur' }
+        ],
+        fieldType: [
+          { required: true, message: 'Please input your fieldType!', trigger: 'blur' }
+        ]
+      }
     };
   },
   name: 'home',
   components: {
     LayoutMain,
   },
-  created() {
+  mounted() {
+    this.getMetadata();
   },
   methods: {
+    getMetadata() {
+      this.$store.dispatch('metadata/view', { id: this.$route.params.id }).then((metadata) => {
+        this.form.id = metadata._id;
+        this.form.name = metadata.name;
+        this.form.fieldName = metadata.fieldName;
+        this.form.fieldType = metadata.fieldType;
+        this.form.isRequired = metadata.isRequired;
+      });
+    },
     onSubmit() {
-      this.$message({
-          message: 'Congrats, metadata updated successfully.',
-          type: 'success'
-        });
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          this.$store.dispatch('metadata/update', this.form).then((metadata) => {
+            this.$message({
+              message: 'Congrats, metadata updated successfully.',
+              type: 'success',
+            });
+
+            this.$router.push({ name: 'show_metadata', params: { id: metadata._id } });
+          }).catch(() => {
+            this.$message({
+              message: 'metadata update failed.',
+              type: 'error',
+            });
+          });
+        } else {
+          return false;
+        }
+      });
     }
   }
 };

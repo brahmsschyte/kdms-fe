@@ -18,19 +18,19 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :span="6"><div class="grid-content bg-purple">Create</div></el-col>
-            <el-col :span="18"><div class="grid-content bg-purple">{{ form.create }}</div></el-col>
+            <el-col :span="18"><div class="grid-content bg-purple"><i v-if="form.create" class="el-icon-check" style="color: green;font-weight: 900;"></i></div></el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="6"><div class="grid-content bg-purple">Read</div></el-col>
-            <el-col :span="18"><div class="grid-content bg-purple">{{ form.read }}</div></el-col>
+            <el-col :span="18"><div class="grid-content bg-purple"><i v-if="form.read" class="el-icon-check" style="color: green;font-weight: 900;"></i></div></el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="6"><div class="grid-content bg-purple">Update</div></el-col>
-            <el-col :span="18"><div class="grid-content bg-purple">{{ form.update }}</div></el-col>
+            <el-col :span="18"><div class="grid-content bg-purple"><i v-if="form.update" class="el-icon-check" style="color: green;font-weight: 900;"></i></div></el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="6"><div class="grid-content bg-purple">Delete</div></el-col>
-            <el-col :span="18"><div class="grid-content bg-purple">{{ form.delete }}</div></el-col>
+            <el-col :span="18"><div class="grid-content bg-purple"><i v-if="form.delete" class="el-icon-check" style="color: green;font-weight: 900;"></i></div></el-col>
           </el-row>
         </el-col>
       </el-row>

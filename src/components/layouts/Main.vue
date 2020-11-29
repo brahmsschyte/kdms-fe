@@ -108,10 +108,6 @@
               <span slot="title">New Workflow</span>
             </el-menu-item>
           </el-submenu>
-          <el-menu-item index="/login">
-            <i class="el-icon-user"></i>
-            <span slot="title">Sign in</span>
-          </el-menu-item>
         </el-menu>
         <el-main>
           <slot></slot>

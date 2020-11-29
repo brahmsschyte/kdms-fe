@@ -27,9 +27,11 @@
             </el-form-item>
             <el-form-item label="Role">
               <el-select v-model="form.role" placeholder="please select role">
-                <el-option label="Manager" value="Manager"></el-option>
-                <el-option label="Supervisor" value="Supervisor"></el-option>
-                <el-option label="Staff" value="Staff"></el-option>
+                <el-option label="Administrator" value="Administrator"></el-option>
+                <el-option label="Finance" value="Finance"></el-option>
+                <el-option label="Account Payable" value="Account Payable"></el-option>
+                <el-option label="Accounting" value="Accounting"></el-option>
+                <el-option label="Vendor" value="Vendor"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="Password" prop="password">
@@ -75,6 +77,15 @@ export default {
       },
       loading: false,
       rules: {
+        name: [
+          { required: true, message: 'Please input your name!', trigger: 'blur' }
+        ],
+        title: [
+          { required: true, message: 'Please input your title!', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: 'Please input your email!', trigger: 'blur' }
+        ],
         password: [
           { required: true, message: 'Please input your password!', trigger: 'blur' },
           { min: 6, message: 'Length should be more than 6 character', trigger: 'blur' }

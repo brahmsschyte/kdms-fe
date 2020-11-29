@@ -76,6 +76,15 @@ export default {
       },
       loading: false,
       rules: {
+        name: [
+          { required: true, message: 'Please input your name!', trigger: 'blur' }
+        ],
+        title: [
+          { required: true, message: 'Please input your title!', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: 'Please input your email!', trigger: 'blur' }
+        ],
         password: [
           { required: true, message: 'Please input your password!', trigger: 'blur' },
           { min: 6, message: 'Length should be more than 6 character', trigger: 'blur' }
