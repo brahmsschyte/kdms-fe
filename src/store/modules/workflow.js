@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { format } from 'date-fns'
 
 // initial state
 const state = {
@@ -7,80 +6,25 @@ const state = {
   headers: {
     'Content-Type': 'application/json',
   },
-  user: {},
-  userList: [],
-  userView: {},
+  workflowList: [],
+  workflowView: {},
 };
 
 // getters
 const getters = {
-  currentDate: () => {
-    return format(new Date(), "'Today is' iiii, d MMMM yyyy")
-  }
 };
 
 // actions
-const actions = {
-  login({ commit, state }, params) {
-    return new Promise((resolve, reject) => {
-      const data = {
-        email: params.email,
-        password: params.password,
-      };
-      axios.post(`${state.baseURL}/login`, data, { headers: state.headers })
-        .then((response) => {
-          if (response.data.token) {
-            localStorage.setItem('USER_TOKEN', response.data.token);
-            localStorage.setItem('USER_ID', response.data.user.id)
-            commit('setUser', response.data.user);
-            resolve(true);
-          } else {
-            reject(false);
-          }
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  },
-
-  validate({ commit, state }) {
+const actions = {list({ commit, state }, params) {
     return new Promise((resolve, reject) => {
       const headers = {
         Authorization: localStorage.getItem('USER_TOKEN'),
         'Content-Type': 'application/json',
       };
-      axios.get(`${state.baseURL}/user/${localStorage.getItem('USER_ID')}`, { headers })
+      axios.get(`${state.baseURL}/workflow`, { headers, params })
         .then((response) => {
           if (response.data.data) {
-            commit('setUser', response.data.data);
-            resolve(true);
-          } else {
-            reject(response.data.data.err);
-          }
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  },
-
-  logout({ commit }) {
-    localStorage.removeItem('USER_TOKEN');
-    localStorage.removeItem('USER_ID');
-    commit('unsetUser');
-  },
-
-  list({ commit, state }, params) {
-    return new Promise((resolve, reject) => {
-      const headers = {
-        Authorization: localStorage.getItem('USER_TOKEN'),
-        'Content-Type': 'application/json',
-      };
-      axios.get(`${state.baseURL}/user`, { headers, params })
-        .then((response) => {
-          if (response.data.data) {
-            commit('setUserList', response.data.data.items);
+            commit('setWorkflowList', response.data.data.items);
             resolve(response.data.data.items);
           } else {
             reject(response.data.data.err);
@@ -98,10 +42,10 @@ const actions = {
         Authorization: localStorage.getItem('USER_TOKEN'),
         'Content-Type': 'application/json',
       };
-      axios.get(`${state.baseURL}/user/${params.id}`, { headers })
+      axios.get(`${state.baseURL}/workflow/${params.id}`, { headers })
         .then((response) => {
           if (response.data.data) {
-            commit('setUserView', response.data.data);
+            commit('setWorkflowView', response.data.data);
             resolve(response.data.data);
           } else {
             reject(response.data.data.err);
@@ -121,15 +65,12 @@ const actions = {
       };
       const data = {
         name: params.name,
-        title: params.title,
-        email: params.email,
-        password: params.password,
-        phone: params.phone
+        steps: params.steps
       };
-      axios.post(`${state.baseURL}/user`, data, { headers })
+      axios.post(`${state.baseURL}/workflow`, data, { headers })
         .then((response) => {
           if (response.data.data) {
-            commit('setUserView', response.data.data);
+            commit('setWorkflowView', response.data.data);
             resolve(response.data.data);
           } else {
             reject(response.data.data.err);
@@ -149,17 +90,12 @@ const actions = {
       };
       let data = {
         name: params.name,
-        title: params.title,
-        email: params.email,
-        phone: params.phone
+        steps: params.steps
       };
-      if (params.password != '') {
-        data.password = params.password;
-      }
-      axios.put(`${state.baseURL}/user/${params.id}`, data, { headers })
+      axios.put(`${state.baseURL}/workflow/${params.id}`, data, { headers })
         .then((response) => {
           if (response.data.data) {
-            commit('setUserView', response.data.data);
+            commit('setWorkflowView', response.data.data);
             resolve(response.data.data);
           } else {
             reject(response.data.data.err);
@@ -177,7 +113,7 @@ const actions = {
         Authorization: localStorage.getItem('USER_TOKEN'),
         'Content-Type': 'application/json',
       };
-      axios.delete(`${state.baseURL}/user/${params.id}`, { headers })
+      axios.delete(`${state.baseURL}/workflow/${params.id}`, { headers })
         .then((response) => {
           if (response.data.data) {
             resolve(true);
@@ -194,20 +130,12 @@ const actions = {
 
 // mutations
 const mutations = {
-  setUser(state, user) {
-    state.user = user;
+  setWorkflowList(state, workflows) {
+    state.WorkflowList = workflows;
   },
 
-  setUserList(state, users) {
-    state.UserList = users;
-  },
-
-  setUserView(state, user) {
-    state.userView = user;
-  },
-
-  unsetUser(state) {
-    state.user = {};
+  setWorkflowView(state, workflow) {
+    state.workflowView = workflow;
   },
 };
 

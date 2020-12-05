@@ -7,13 +7,13 @@
     <el-container>
       <el-row :gutter="20">
         <el-col :span="24">
-          <span style="float: right;">Today is Saturday, 21 November 2020</span>
+          <span style="float: right;">{{ $store.getters['user/currentDate'] }}</span>
           <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
           <h2>Manage Document</h2>
           <el-table
             v-loading="loading"
-            :data="tableData"
+            :data="filteredData"
             stripe
             :default-sort = "{prop: 'id', order: 'ascending'}"
             style="width: 100%">
@@ -35,6 +35,8 @@
             <el-table-column
               prop="status"
               sortable
+              :filters="[{ text: 'Submitted', value: 'Submitted' }, { text: 'Reviewed', value: 'Reviewed' }, { text: 'Validated', value: 'Validated' }, { text: 'Rejected', value: 'Rejected' }, { text: 'Archived', value: 'Archived' }]"
+              :filter-method="filterStatus"
               label="Status">
             </el-table-column>
             <el-table-column
@@ -110,7 +112,7 @@ import LayoutMain from '@/components/layouts/Main.vue';
 export default {
   data() {
     return {
-      documentSearch: 'john',
+      documentSearch: '',
       deleteDocument: {
         dialogVisible: false,
         index: null,
@@ -217,16 +219,22 @@ export default {
         createdAt: '2020-11-14 00:00:00',
         updatedAt: '2020-11-14 00:00:00'
       }],
-      loading: false
+      filteredData: [],
+      loading: true
     };
   },
   name: 'home',
   components: {
     LayoutMain,
   },
-  created() {
+  mounted() {
+    this.getDocumentList();
   },
   methods: {
+    getDocumentList() {
+      this.filteredData = this.tableData;
+      this.loading = false;
+    },
     handleShow(index, row) {
       console.log(index, row);
       this.$router.push(`/document/${row.id}`);
@@ -247,6 +255,10 @@ export default {
       if (idx > -1) {
           this.tableData.splice(idx, 1);
       }
+      idx = this.filteredData.indexOf(row);
+      if (idx > -1) {
+          this.filteredData.splice(idx, 1);
+      }
       this.deleteDocument.dialogVisible = false;
       this.$message({
           message: `Congrats, document ${row.fileName} deleted successfully.`,
@@ -255,11 +267,11 @@ export default {
     },
     handleSearch(scope) {
       console.log(scope);
-      this.$message({
-          message: `Congrats, document ${this.documentSearch}`,
-          type: 'success'
-        });
-    }
+      this.filteredData = this.tableData.filter(item => item.fileName.toLowerCase().includes(this.documentSearch.toLowerCase()));
+    },
+    filterStatus(value, row) {
+      return row.status === value;
+    },
   }
 };
 </script>

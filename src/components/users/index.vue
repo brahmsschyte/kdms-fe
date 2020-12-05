@@ -7,13 +7,13 @@
     <el-container>
       <el-row :gutter="20">
         <el-col :span="24">
-          <span style="float: right;">Today is Saturday, 21 November 2020</span>
+          <span style="float: right;">{{ $store.getters['user/currentDate'] }}</span>
           <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
           <h2>Manage User</h2>
           <el-table
             v-loading="loading"
-            :data="tableData"
+            :data="filteredData"
             stripe
             :default-sort = "{prop: 'id', order: 'ascending'}"
             style="width: 100%">
@@ -41,11 +41,17 @@
               prop="createdAt"
               sortable
               label="Join Date">
+              <template slot-scope="scope">
+                {{ formatDate(scope.row.createdAt) }}
+              </template>
             </el-table-column>
             <el-table-column
               prop="updatedAt"
               sortable
               label="Last Modified">
+              <template slot-scope="scope">
+                {{ formatDate(scope.row.updatedAt) }}
+              </template>
             </el-table-column>
             <el-table-column
               fixed="right"
@@ -101,17 +107,19 @@
 <script>
 // @ is an alias to /src
 import LayoutMain from '@/components/layouts/Main.vue';
+import { format, parseISO } from 'date-fns';
 
 export default {
   data() {
     return {
-      userSearch: 'john',
+      userSearch: '',
       deleteUser: {
         dialogVisible: false,
         index: null,
         item: {},
       },
       tableData: [],
+      filteredData: [],
       loading: true
     };
   },
@@ -122,10 +130,16 @@ export default {
   mounted() {
     this.getUserList();
   },
+  computed: {
+  },
   methods: {
+    formatDate: (value) => {
+      return format(parseISO(value), "yyyy-MM-dd HH:mm:ss");
+    },
     getUserList() {
       this.$store.dispatch('user/list').then((list) => {
         this.tableData = list;
+        this.filteredData = list;
         this.loading = false;
       });
     },
@@ -146,10 +160,14 @@ export default {
     handleDelete(index, row) {
       console.log(index, row);
       this.$store.dispatch('user/delete', { id: row._id}).then(() => {
-        let idx = this.tableData.indexOf(row);
-        if (idx > -1) {
-            this.tableData.splice(idx, 1);
-        }
+      let idx = this.tableData.indexOf(row);
+      if (idx > -1) {
+          this.tableData.splice(idx, 1);
+      }
+      idx = this.filteredData.indexOf(row);
+      if (idx > -1) {
+          this.filteredData.splice(idx, 1);
+      }
         this.deleteUser.dialogVisible = false;
         this.$message({
             message: `Congrats, user ${row.name} deleted successfully.`,
@@ -164,10 +182,7 @@ export default {
     },
     handleSearch(scope) {
       console.log(scope);
-      this.$message({
-          message: `Congrats, user ${this.userSearch}`,
-          type: 'success'
-        });
+      this.filteredData = this.tableData.filter(item => item.name.toLowerCase().includes(this.userSearch.toLowerCase()));
     }
   }
 };

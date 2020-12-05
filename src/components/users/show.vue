@@ -8,7 +8,7 @@
     <el-container>
       <el-row :gutter="20">
         <el-col :span="24">
-          <span style="float: right;">Today is Saturday, 21 November 2020</span>
+          <span style="float: right;">{{ $store.getters['user/currentDate'] }}</span>
           <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
           <h2>Display User</h2>
@@ -30,7 +30,7 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :span="6"><div class="grid-content bg-purple">Role</div></el-col>
-            <el-col :span="18"><div class="grid-content bg-purple">{{ form.role }}</div></el-col>
+            <el-col :span="18"><div class="grid-content bg-purple">Guest</div></el-col>
           </el-row>
         </el-col>
       </el-row>

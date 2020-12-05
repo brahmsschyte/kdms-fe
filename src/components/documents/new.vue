@@ -8,7 +8,7 @@
     <el-container>
       <el-row :gutter="20">
         <el-col :span="24">
-          <span style="float: right;">Today is Saturday, 21 November 2020</span>
+          <span style="float: right;">{{ $store.getters['user/currentDate'] }}</span>
           <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
           <h2>New Document</h2>
@@ -89,10 +89,10 @@ export default {
       documentSearch: '',
       form: {
         id: '1',
-        fileName: 'invoice01.pdf',
-        fileSize: '2.2 MB',
-        status: 'Reviewed',
-        physicalLocation: 'Room 1 Shelf 2C',
+        fileName: '',
+        fileSize: '',
+        status: '',
+        physicalLocation: '',
         template: {
           id: '1',
           name: 'Invoice Form',
@@ -108,7 +108,7 @@ export default {
             author: 'Jhon Smith',
             createdAt: '2020-11-14 00:00:00',
             updatedAt: '2020-11-14 00:00:00',
-            value: '200000000'
+            value: ''
           }, {
             id: '3',
             name: 'GR/IR Amount',
@@ -120,7 +120,7 @@ export default {
             author: 'Jhon Smith',
             createdAt: '2020-11-14 00:00:00',
             updatedAt: '2020-11-14 00:00:00',
-            value: '50000000'
+            value: ''
           }],
           workflow: {
             id: '1',

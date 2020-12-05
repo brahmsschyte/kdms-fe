@@ -7,13 +7,13 @@
     <el-container>
       <el-row :gutter="20">
         <el-col :span="24">
-          <span style="float: right;">Today is Saturday, 21 November 2020</span>
+          <span style="float: right;">{{ $store.getters['user/currentDate'] }}</span>
           <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
           <h2>Manage Role</h2>
           <el-table
             v-loading="loading"
-            :data="tableData"
+            :data="filteredData"
             stripe
             :default-sort = "{prop: 'id', order: 'ascending'}"
             style="width: 100%">
@@ -135,7 +135,7 @@ import LayoutMain from '@/components/layouts/Main.vue';
 export default {
   data() {
     return {
-      roleSearch: 'john',
+      roleSearch: '',
       deleteRole: {
         dialogVisible: false,
         index: null,
@@ -187,16 +187,22 @@ export default {
         createdAt: '2020-11-14 00:00:00',
         updatedAt: '2020-11-14 00:00:00'
       }],
-      loading: false
+      loading: true,
+      filteredData: [],
     };
   },
   name: 'home',
   components: {
     LayoutMain,
   },
-  created() {
+  mounted() {
+    this.getRoleList();
   },
   methods: {
+    getRoleList() {
+      this.filteredData = this.tableData;
+      this.loading = false;
+    },
     handleShow(index, row) {
       console.log(index, row);
       this.$router.push(`/role/${row.id}`);
@@ -217,6 +223,10 @@ export default {
       if (idx > -1) {
           this.tableData.splice(idx, 1);
       }
+      idx = this.filteredData.indexOf(row);
+      if (idx > -1) {
+          this.filteredData.splice(idx, 1);
+      }
       this.deleteRole.dialogVisible = false;
       this.$message({
           message: `Congrats, role ${row.fullName} deleted successfully.`,
@@ -225,10 +235,7 @@ export default {
     },
     handleSearch(scope) {
       console.log(scope);
-      this.$message({
-          message: `Congrats, role ${this.roleSearch}`,
-          type: 'success'
-        });
+      this.filteredData = this.tableData.filter(item => item.name.toLowerCase().includes(this.roleSearch.toLowerCase()));
     }
   }
 };

@@ -7,21 +7,16 @@
     <el-container>
       <el-row :gutter="20">
         <el-col :span="24">
-          <span style="float: right;">Today is Saturday, 21 November 2020</span>
+          <span style="float: right;">{{ $store.getters['user/currentDate'] }}</span>
           <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
           <h2>Manage Metadata</h2>
           <el-table
             v-loading="loading"
-            :data="tableData"
+            :data="filteredData"
             stripe
             :default-sort = "{prop: 'id', order: 'ascending'}"
             style="width: 100%">
-            <el-table-column
-              prop="id"
-              sortable
-              label="ID">
-            </el-table-column>
             <el-table-column
               prop="name"
               sortable
@@ -125,14 +120,14 @@ import LayoutMain from '@/components/layouts/Main.vue';
 export default {
   data() {
     return {
-      metadataSearch: 'john',
+      metadataSearch: '',
       deleteMetadata: {
         dialogVisible: false,
         index: null,
         item: {},
       },
       tableData: [{
-        id: '1',
+        id: '5fcb3b1ed2180f0017698a3a',
         name: 'Nomor Surat Jalan',
         description: 'Nomor Surat Jalan',
         model: 'noSuratJalan',
@@ -143,7 +138,7 @@ export default {
         createdAt: '2020-11-14 00:00:00',
         updatedAt: '2020-11-14 00:00:00'
       }, {
-        id: '2',
+        id: '5fcb3b55d2180f0017698a3c',
         name: 'PO Amount',
         description: 'PO Amount',
         model: 'poAmount',
@@ -154,7 +149,7 @@ export default {
         createdAt: '2020-11-14 00:00:00',
         updatedAt: '2020-11-14 00:00:00'
       }, {
-        id: '3',
+        id: '5fcb3b7bd2180f0017698a3d',
         name: 'GR/IR Amount',
         description: 'GR/IR Amount',
         model: 'grirAmount',
@@ -165,7 +160,7 @@ export default {
         createdAt: '2020-11-14 00:00:00',
         updatedAt: '2020-11-14 00:00:00'
       }, {
-        id: '4',
+        id: '5fcb3b94d2180f0017698a3e',
         name: 'VAT/WHT',
         description: 'VAT/WHT',
         model: 'vatwht',
@@ -176,16 +171,22 @@ export default {
         createdAt: '2020-11-14 00:00:00',
         updatedAt: '2020-11-14 00:00:00'
       }],
-      loading: false
+      filteredData: [],
+      loading: true
     };
   },
   name: 'home',
   components: {
     LayoutMain,
   },
-  created() {
+  mounted() {
+    this.getMetadataList();
   },
   methods: {
+    getMetadataList() {
+      this.filteredData = this.tableData;
+      this.loading = false;
+    },
     handleShow(index, row) {
       console.log(index, row);
       this.$router.push(`/metadata/${row.id}`);
@@ -206,6 +207,10 @@ export default {
       if (idx > -1) {
           this.tableData.splice(idx, 1);
       }
+      idx = this.filteredData.indexOf(row);
+      if (idx > -1) {
+          this.filteredData.splice(idx, 1);
+      }
       this.deleteMetadata.dialogVisible = false;
       this.$message({
           message: `Congrats, metadata ${row.fullName} deleted successfully.`,
@@ -214,10 +219,7 @@ export default {
     },
     handleSearch(scope) {
       console.log(scope);
-      this.$message({
-          message: `Congrats, metadata ${this.metadataSearch}`,
-          type: 'success'
-        });
+      this.filteredData = this.tableData.filter(item => item.name.toLowerCase().includes(this.metadataSearch.toLowerCase()));
     }
   }
 };

@@ -7,13 +7,13 @@
     <el-container>
       <el-row :gutter="20">
         <el-col :span="24">
-          <span style="float: right;">Today is Saturday, 21 November 2020</span>
+          <span style="float: right;">{{ $store.getters['user/currentDate'] }}</span>
           <span>Hi {{ $store.state.user.user.name }}!</span>
           <el-divider></el-divider>
           <h2>Manage Template</h2>
           <el-table
             v-loading="loading"
-            :data="tableData"
+            :data="filteredData"
             stripe
             :default-sort = "{prop: 'id', order: 'ascending'}"
             style="width: 100%">
@@ -123,7 +123,7 @@ import LayoutMain from '@/components/layouts/Main.vue';
 export default {
   data() {
     return {
-      templateSearch: 'john',
+      templateSearch: '',
       deleteTemplate: {
         dialogVisible: false,
         index: null,
@@ -181,8 +181,8 @@ export default {
         updatedAt: '2020-11-14 00:00:00'
       }, {
         id: '2',
-        name: 'Invoice Form',
-        description: 'Invoice Form',
+        name: 'Tax Form',
+        description: 'Tax Form',
         metadata: [{
         id: '4',
         name: 'VAT/WHT',
@@ -219,16 +219,22 @@ export default {
         createdAt: '2020-11-14 00:00:00',
         updatedAt: '2020-11-14 00:00:00'
       }],
-      loading: false
+      filteredData: [],
+      loading: true
     };
   },
   name: 'home',
   components: {
     LayoutMain,
   },
-  created() {
+  mounted() {
+    this.getTemplateList();
   },
   methods: {
+    getTemplateList() {
+      this.filteredData = this.tableData;
+      this.loading = false;
+    },
     handleShow(index, row) {
       console.log(index, row);
       this.$router.push(`/template/${row.id}`);
@@ -249,6 +255,10 @@ export default {
       if (idx > -1) {
           this.tableData.splice(idx, 1);
       }
+      idx = this.filteredData.indexOf(row);
+      if (idx > -1) {
+          this.filteredData.splice(idx, 1);
+      }
       this.deleteTemplate.dialogVisible = false;
       this.$message({
           message: `Congrats, template ${row.fullName} deleted successfully.`,
@@ -257,10 +267,7 @@ export default {
     },
     handleSearch(scope) {
       console.log(scope);
-      this.$message({
-          message: `Congrats, template ${this.templateSearch}`,
-          type: 'success'
-        });
+      this.filteredData = this.tableData.filter(item => item.name.toLowerCase().includes(this.templateSearch.toLowerCase()));
     }
   }
 };
